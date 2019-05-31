@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btn1"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="50pt"/>
+    
+        <com.owen.tvrecyclerview.widget.TvRecyclerView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginLeft="10pt"
+            android:layout_marginRight="10pt"
+            android:layout_marginBottom="10pt"
+            android:layout_weight="1"
+            style="@style/TwoWayView"
+            android:background="@color/transparent"
+            android:orientation="vertical"
+            app:tv_layoutManager="GridLayoutManager"
+            app:tv_numColumns="5" />
+
+        <Button
+            android:id="@+id/btn2"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="50pt"/>
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/playerContainer"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <SurfaceView
+        android:focusable="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/mPlayerView"/>
+    <ImageButton
+        android:visibility="gone"
+        android:id="@+id/btn_play_pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="5dp"
+        android:background="@drawable/mediacontroller_button"
+        android:src="@drawable/mediacontroller_pause" />
+    <TextView
+        android:id="@+id/tv_file_name"
+        style="@style/MediaController_Text"
+        android:padding="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:singleLine="true" />
+
+    <RelativeLayout
+        android:id="@+id/llSeekbar"
+        android:layout_gravity="bottom"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="100dp"
+        android:layout_marginLeft="100dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:paddingTop="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:background="#666666"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <SeekBar
+                android:thumbTint="#ffffff"
+                android:progressDrawable="@drawable/bg_seekbar"
+                android:minHeight="10dp"
+                android:maxHeight="10dp"
+                android:max="1000"
+                android:id="@+id/seekBar"
+                android:focusable="true"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="3dp"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_gravity="center"
+                android:id="@+id/tv_time_current"
+                style="@style/MediaController_Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                />
+            <TextView
+                android:layout_gravity="center"
+                android:id="@+id/tv_time_total"
+                style="@style/MediaController_Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp" />
+        </LinearLayout>
+
+        <TextView
+            android:paddingTop="3dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvMoveTime"
+            style="@style/MediaController_Text"
+            />
+    </RelativeLayout>
+</FrameLayout>
