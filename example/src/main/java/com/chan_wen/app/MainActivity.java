@@ -148,7 +148,6 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Focu
         }
     }
 
-
     /**
      * 开始获取服务器数据
      */
