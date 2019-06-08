@@ -7,8 +7,8 @@ android {
         applicationId "com.chan_wen.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 101
+        versionName "1.0.1"
     }
     buildTypes {
         release {

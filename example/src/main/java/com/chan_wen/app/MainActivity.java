@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2014 Lucas Rocha
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.chan_wen.app;
 
 import android.app.ProgressDialog;
@@ -25,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.widget.Toast;
 
+import com.blankj.utilcode.utils.StringUtils;
+import com.blankj.utilcode.utils.ToastUtils;
 import com.owen.focus.FocusBorder;
 import com.owen.tab.TvTabLayout;
 import com.chan_wen.app.entity.Movie;
@@ -41,24 +27,15 @@ import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
-/**
- * @author ZhouSuQiang
- */
+
 public class MainActivity extends AppCompatActivity implements BaseFragment.FocusBorderHelper{
-    private final String LOGTAG = MainActivity.class.getSimpleName();
     private final String[] tabNames = {
-//            "VLayout", "Metro", "Spannable",
-//            "Nested", "Menu&List",
             "企业风采",
             "会员专区"
-//            "V7Grid", "Staggered", "UpdateData"
     };
     private final String[] fragments = {
-//            VLayoutFragment.class.getName(), MetroFragment.class.getName(), SpannableFragment.class.getName(),
-//            NestedFragment.class.getName(), ListFragment.class.getName(),
             GridFragment.class.getName(),
             GridFragment.class.getName()
-//            V7GridFragment.class.getName(), StaggeredFragment.class.getName(), UpdateDataFragment.class.getName()
     };
 
     @BindView(R.id.tab_layout)
@@ -100,7 +77,8 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Focu
             if (voiceKey != null) {
                 progressDialog = ProgressDialog.show(this, "提示", "正在解析语音数据，请稍后...");
                 progressDialog.show();
-                requestServerData(voiceKey);
+//                requestServerData(voiceKey);
+                queryNetData(voiceKey);
             } else {
                 Toast.makeText(this, "解析语音失败!", Toast.LENGTH_SHORT).show();
             }
@@ -153,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Focu
      */
     private void requestServerData(String voiceKey) {
         BmobQuery<Movie> categoryBmobQuery = new BmobQuery<>();
-        categoryBmobQuery.addWhereContains("title", voiceKey);
+        categoryBmobQuery.addWhereEqualTo("title", voiceKey);
         categoryBmobQuery.findObjects(new FindListener<Movie>() {
             @Override
             public void done(List<Movie> list, BmobException e) {
@@ -168,6 +146,44 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Focu
                 } else {
                     Toast.makeText(MainActivity.this, "抱歉，未找到您需要的内容，请重试！", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+    }
+
+    /**
+     * 请求视频数据源
+     */
+    private void queryNetData(final String voiceKey) {
+        BmobQuery<Movie> query = new BmobQuery<>();
+        query.setLimit(500);
+        query.order("createdAt");
+        //v3.5.0版本提供`findObjectsByTable`方法查询自定义表名的数据
+        query.findObjects(new FindListener<Movie>() {
+            @Override
+            public void done(List<Movie> list, BmobException e) {
+                progressDialog.dismiss();
+                if (list != null) {
+                    Movie targetMv = null;
+                    for (Movie mv : list) {
+                        if (!StringUtils.isEmpty(mv.getTitle()) && mv.getTitle().contains(voiceKey)) {
+                            targetMv = mv;
+                            break;
+                        }
+                    }
+
+                    if (targetMv != null) {
+                        Intent intent = new Intent(MainActivity.this, VideoPlayerPageActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra(VideoPlayerPageActivity.MOVIE, targetMv.getVideoFile().getFileUrl());
+                        startActivity(intent);
+                        return;
+                    } else {
+                        Toast.makeText(MainActivity.this, "抱歉, 未找到匹配的内容", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(MainActivity.this, "抱歉, 未找到匹配的内容", Toast.LENGTH_SHORT).show();
+                }
+                finish();
             }
         });
     }
