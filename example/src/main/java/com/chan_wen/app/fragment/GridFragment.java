@@ -31,6 +31,7 @@ import com.chan_wen.app.entity.Image;
 import com.chan_wen.app.entity.Movie;
 import com.owen.tvrecyclerview.widget.SimpleOnItemListener;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
+import com.xiasuhuei321.loadingdialog.view.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,7 @@ public class GridFragment extends BaseFragment {
     private List<Movie> movieList;
     private List<Image> imageList;
     private int mPosition = 0;
+    private LoadingDialog loadingDialog;
 
     public void setPosition(int mPosition) {
         this.mPosition = mPosition;
@@ -69,6 +71,11 @@ public class GridFragment extends BaseFragment {
         // 推荐使用此方法
         mRecyclerView.setSpacingWithMargins(10, 10);
         mAdapter = new GridAdapter(getContext());
+        loadingDialog =  new LoadingDialog(getContext())
+                .setSuccessText("加载成功")//显示加载成功时的文字
+                .setFailedText("加载失败")
+                .setLoadingText("加载中...");//设置loading时显示的文字
+        loadingDialog.show();
         switch (mPosition) {
             case 0:
                 //创建视频页面
@@ -138,8 +145,11 @@ public class GridFragment extends BaseFragment {
             @Override
             public void done(List<Movie> list, BmobException e) {
                 if (list != null) {
+                    loadingDialog.close();
                     movieList.addAll(list);
                     mAdapter.notifyDataSetChanged();
+                } else {
+                    loadingDialog.loadFailed();
                 }
             }
         });
@@ -156,8 +166,11 @@ public class GridFragment extends BaseFragment {
             @Override
             public void done(List<Image> list, BmobException e) {
                 if (list != null) {
+                    loadingDialog.close();
                     imageList.addAll(list);
                     mAdapter.notifyDataSetChanged();
+                } else {
+                    loadingDialog.loadFailed();
                 }
             }
         });
