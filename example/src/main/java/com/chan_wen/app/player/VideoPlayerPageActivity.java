@@ -44,8 +44,8 @@ public class VideoPlayerPageActivity extends Activity implements SeekBar.OnSeekB
     private MPlayer player;
     private SeekBar seekBar;
     private Timer timer;
-    TimerTask timerTask;
-    String url2 = "http://bmob-cdn-24828.b0.upaiyun.com/2019/05/23/13bc609f40317eec8081152fe69ef404.mp4";
+    private TimerTask timerTask;
+    private String url;
     private ImageButton btn_play_pause;
     private TextView tv_time_total, tv_time_current, tv_file_name, tvMoveTime;
     private static final int HIDE = 1, SHOW = 2, FINISH = 3, ENABLE_SEEK = 4, ENABLE_PLAY = 5;
@@ -86,23 +86,21 @@ public class VideoPlayerPageActivity extends Activity implements SeekBar.OnSeekB
 
     private RelativeLayout llSeekbar;
     private int videoDuration;
-    private LoadingDialog loadingDialog, playerLoadingDialog;
+    private LoadingDialog playerLoadingDialog;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_myplayer2);
-
         initView();
         initData();
         initPlayer();
-
         String voiceKey = getIntent().getStringExtra(VOICE_KEY);
         if (com.blankj.utilcode.utils.StringUtils.isEmpty(voiceKey)) {
             //1、标识非语音唤醒
-            url2 = getIntent().getStringExtra(MOVIE);
-            starPlayUrl(url2);
+            url = getIntent().getStringExtra(MOVIE);
+            starPlayUrl(url);
         } else {
             //2、语音唤醒
             queryNetData(voiceKey);
@@ -113,13 +111,6 @@ public class VideoPlayerPageActivity extends Activity implements SeekBar.OnSeekB
      * 请求视频数据源
      */
     private void queryNetData(final String voiceKey) {
-        loadingDialog = new LoadingDialog(this)
-                .setSuccessText("加载成功")//显示加载成功时的文字
-                .setFailedText("加载失败")
-                .setLoadingText("加载中...");//设置loading时显示的文字
-        loadingDialog.show();
-
-        queryNetData(voiceKey);
         BmobQuery<Movie> query = new BmobQuery<>();
         query.setLimit(500);
         query.order("createdAt");
@@ -127,7 +118,6 @@ public class VideoPlayerPageActivity extends Activity implements SeekBar.OnSeekB
         query.findObjects(new FindListener<Movie>() {
             @Override
             public void done(List<Movie> list, BmobException e) {
-                loadingDialog.close();
                 if (list != null) {
                     Movie targetMv = null;
                     for (Movie mv : list) {
@@ -138,15 +128,13 @@ public class VideoPlayerPageActivity extends Activity implements SeekBar.OnSeekB
                     }
 
                     if (targetMv != null) {
-                        url2 = targetMv.getVideoFile().getFileUrl();
-                        starPlayUrl(url2);
+                        url = targetMv.getVideoFile().getFileUrl();
+                        starPlayUrl(url);
                         return;
                     } else {
-                        loadingDialog.loadFailed();
                         finish();
                     }
                 } else {
-                    loadingDialog.loadFailed();
                     finish();
                 }
             }
@@ -163,6 +151,11 @@ public class VideoPlayerPageActivity extends Activity implements SeekBar.OnSeekB
         tv_file_name = findViewById(R.id.tv_file_name);
         tvMoveTime = findViewById(R.id.tvMoveTime);
         seekBar.setOnSeekBarChangeListener(this);
+        playerLoadingDialog = new LoadingDialog(this)
+                .setSuccessText("加载成功")//显示加载成功时的文字
+                .setFailedText("加载失败")
+                .setLoadingText("正在缓冲...");//设置loading时显示的文字
+        playerLoadingDialog.show();
     }
 
     private void initData() {
@@ -176,7 +169,6 @@ public class VideoPlayerPageActivity extends Activity implements SeekBar.OnSeekB
         playerSurfaceDestroyed();
         playerOnBufferUpdateListen();
         seedCompletedListen();
-
     }
 
     private void playerOnBufferUpdateListen() {
@@ -270,11 +262,6 @@ public class VideoPlayerPageActivity extends Activity implements SeekBar.OnSeekB
     }
 
     private void playerOnPrepared() {
-        playerLoadingDialog =  new LoadingDialog(this)
-                .setSuccessText("加载成功")//显示加载成功时的文字
-                .setFailedText("加载失败")
-                .setLoadingText("正在缓冲...");//设置loading时显示的文字
-        playerLoadingDialog.show();
         player.setOnPrepared(new MPlayer.IMPlayerPrepared() {
             @Override
             public void onMPlayerPrepare() {
@@ -287,7 +274,6 @@ public class VideoPlayerPageActivity extends Activity implements SeekBar.OnSeekB
                 String time = StringUtils.generateTime(videoDuration);
                 tv_time_total.setText(" / " + time);
                 tv_time_current.setText("00:00");
-
                 mHandler.sendMessageDelayed(mHandler.obtainMessage(HIDE), timeout);
                 timer = new Timer();
                 timerTask = new TimerTask() {
@@ -334,7 +320,8 @@ public class VideoPlayerPageActivity extends Activity implements SeekBar.OnSeekB
         int seekbarRealWidth = seekBar.getWidth() - 2 * ConvertUtils.dp2px(15);//15在xml中写死了
         float average = (float) (seekbarRealWidth * 1.0 / seekBar.getMax());
         int left = (int) (progress * average) + tvMoveTime.getWidth() / 4;
-        tvMoveTime.setX(left);//当前播放时间的位置跟随seekbar
+        //当前播放时间的位置跟随seekbar
+        tvMoveTime.setX(left);
     }
 
     @Override

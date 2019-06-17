@@ -6,22 +6,26 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
+
 import com.owen.focus.FocusBorder;
 import com.owen.tab.TvTabLayout;
 import com.chan_wen.app.fragment.BaseFragment;
 import com.chan_wen.app.fragment.GridFragment;
 import com.chan_wen.app.player.VideoPlayerPageActivity;
 import com.owen.tvrecyclerview.utils.Loger;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.chan_wen.app.HomeActivity.MEDIA_TYPE;
+
 /**
-  * 版权: 无
-  * 作者: 胡涛
-  * 创建日期:   2019-6-11
-  * 创建时间:   23:16
-  * 描述: app启动首页
-  */
+ * 版权: 无
+ * 作者: 胡涛
+ * 创建日期:   2019-6-11
+ * 创建时间:   23:16
+ * 描述: app启动首页
+ */
 public class MainActivity extends AppCompatActivity implements BaseFragment.FocusBorderHelper {
     private final String[] tabNames = {
             "企业风采",
@@ -36,25 +40,33 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Focu
     TvTabLayout mTabLayout;
 
     private FocusBorder mFocusBorder;
-    private String voiceKey;
+    private GridFragment mFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = getIntent();
-        voiceKey = intent.getStringExtra("name");
-        if (voiceKey != null) {
-            //1、通过语音控制传参数启动app
-            Intent i = new Intent(MainActivity.this, VideoPlayerPageActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            i.putExtra(VideoPlayerPageActivity.VOICE_KEY, voiceKey);
-            startActivity(i);
-            finish();
-        } else {
-            //2、通过普通方式启动app
-            init();
-            mTabLayout.selectTab(0);
+        //通过普通方式启动app
+        init();
+        String mediaType = getIntent().getStringExtra(MEDIA_TYPE);
+        FragmentTransaction mFt = getSupportFragmentManager().beginTransaction();
+        mFragment = (GridFragment) Fragment.instantiate(MainActivity.this,GridFragment.class.getName());
+        switch (mediaType) {
+            case HomeActivity.VIDEO:
+                mTabLayout.selectTab(0);
+                mFragment.setPosition(0);
+                break;
+            case HomeActivity.IMAGE:
+                mTabLayout.selectTab(1);
+                mFragment.setPosition(1);
+                break;
+            default:
+                mTabLayout.selectTab(0);
+                mFragment.setPosition(0);
+                break;
         }
+        mFt.add(R.id.content, mFragment);
+        mFt.commit();
     }
 
     private void init() {
@@ -74,10 +86,10 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Focu
                     .build(this);
         }
 
-        mTabLayout.addOnTabSelectedListener(new TabSelectedListener());
-        for (String tabName : tabNames) {
-            mTabLayout.addTab(mTabLayout.newTab().setText(tabName));
-        }
+//        mTabLayout.addOnTabSelectedListener(new TabSelectedListener());
+//        for (String tabName : tabNames) {
+//            mTabLayout.addTab(mTabLayout.newTab().setText(tabName));
+//        }
     }
 
     @Override

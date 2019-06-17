@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-
     defaultConfig {
         applicationId "com.chan_wen.app"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -24,27 +23,25 @@ android {
             outputFileName = fileName
         }
     }
+    buildToolsVersion '28.0.3'
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "com.android.support:appcompat-v7:$rootProject.ext.supportVersion"
     implementation "com.android.support:support-v4:$rootProject.ext.supportVersion"
-//    implementation "com.android.support:leanback-v17:$rootProject.ext.supportVersion"
+    //    implementation "com.android.support:leanback-v17:$rootProject.ext.supportVersion"
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-
     implementation 'me.jessyan:autosize:1.1.0'
     implementation 'com.owen:tv-tablayout:1.0.1'
     implementation 'com.owen:tv-widget:1.0.1'
     implementation 'com.owen:tv-focusborder:1.0.8'
-//    implementation project(':tv-focusborder')
-
+    //    implementation project(':tv-focusborder')
     //    implementation 'com.owen:tv-recyclerview:2.0.0'
     implementation project(':tv-recyclerview')
-
     implementation 'cn.bmob.android:bmob-sdk:3.7.3-rc1'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.2'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
@@ -57,4 +54,3 @@ dependencies {
     implementation "com.android.support:cardview-v7:$rootProject.ext.supportVersion"
     implementation 'com.github.ForgetAll:LoadingDialog:v1.1.2'
 }
-
